@@ -1,47 +1,67 @@
-"use client"; // Home uses hooks (useState)
-
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { fetchInvoices, fetchCustomers, fetchRevenue } from "./lib/data";
 
-// Chapter 4 placeholder dashboard items
-const initialDashboardItems = [
-  { id: 1, title: "Item One" },
-  { id: 2, title: "Item Two" },
-  { id: 3, title: "Item Three" },
-];
-
-export default function Home() {
-  const [items] = useState(initialDashboardItems);
+export default async function HomePage() {
+  // Fetch data directly from Prisma (Server Component)
+  const invoices = await fetchInvoices();
+  const customers = await fetchCustomers();
+  const revenue = await fetchRevenue();
 
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        {/* Chapter 1 requirement */}
-        <h1 className="text-2xl font-bold">Hello, Next.js!</h1>
+      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start w-full max-w-3xl">
+        {/* Dashboard Heading */}
+        <h1 className="text-2xl font-bold">Dashboard Overview</h1>
 
-        {/* Chapter 2 navigation */}
-        <nav className="flex gap-4">
+        {/* Navigation */}
+        <nav className="flex gap-4 mb-4">
           <Link href="/">Home</Link>
           <Link href="/dashboard">Dashboard</Link>
           <Link href="/about">About</Link>
         </nav>
 
-        {/* Chapter 3 dashboard placeholder */}
-        <ul className="list-disc pl-5">
-          {items.map((item) => (
-            <li key={item.id}>{item.title}</li>
-          ))}
-        </ul>
+        {/* Revenue Summary */}
+        <section className="mb-6 w-full">
+          <h2 className="text-xl font-semibold">Revenue Summary</h2>
+          <p className="mt-2 text-lg">Total Revenue: ${revenue}</p>
+        </section>
 
-        {/* Next.js logo */}
-        <Image src="/next.svg" alt="Next.js logo" width={180} height={38} priority />
+        {/* Invoices List */}
+        <section className="mb-6 w-full">
+          <h2 className="text-xl font-semibold">Invoices</h2>
+          <ul className="list-disc pl-5 mt-2">
+            {invoices.length > 0 ? (
+              invoices.map((invoice) => (
+                <li key={invoice.id}>
+                  <strong>{invoice.customer.name}</strong> — ${invoice.amount} ({invoice.status})
+                </li>
+              ))
+            ) : (
+              <li>No invoices found.</li>
+            )}
+          </ul>
+        </section>
 
-        {/* Action buttons */}
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
+        {/* Customers List */}
+        <section className="w-full">
+          <h2 className="text-xl font-semibold">Customers</h2>
+          <ul className="list-disc pl-5 mt-2">
+            {customers.length > 0 ? (
+              customers.map((customer) => (
+                <li key={customer.id}>{customer.name}</li>
+              ))
+            ) : (
+              <li>No customers found.</li>
+            )}
+          </ul>
+        </section>
+
+        {/* Footer Actions */}
+        <div className="flex gap-4 items-center flex-col sm:flex-row mt-6">
           <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
+            href="https://vercel.com/new"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -49,12 +69,12 @@ export default function Home() {
             Deploy now
           </a>
           <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
+            href="https://nextjs.org/docs"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Read our docs
+            Read Docs
           </a>
         </div>
       </main>
@@ -62,7 +82,7 @@ export default function Home() {
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
         <a
           className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+          href="https://nextjs.org/learn"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -71,7 +91,7 @@ export default function Home() {
         </a>
         <a
           className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+          href="https://vercel.com/templates?framework=next.js"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -80,7 +100,7 @@ export default function Home() {
         </a>
         <a
           className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+          href="https://nextjs.org"
           target="_blank"
           rel="noopener noreferrer"
         >

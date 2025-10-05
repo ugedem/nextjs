@@ -1,0 +1,29 @@
+// prisma/schema.prisma
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  id        String    @id @default(cuid())
+  name      String
+  email     String    @unique
+  image_url String?
+  invoices  Invoice[]
+}
+
+model Invoice {
+  id          String   @id @default(cuid())
+  customerId  String
+  amount      Float
+  status      String
+  date        DateTime @default(now())
+
+  customer    Customer @relation(fields: [customerId], references: [id])
+}
